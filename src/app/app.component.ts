@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
+import { AppState } from './store/app.store';
+import { Store } from '@ngrx/store';
+import * as SportStore from './sports/sport.store';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +12,13 @@ import { HeaderComponent } from './header/header.component';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'sports-app';
+
+  constructor(private store: Store<AppState>) {}
+
+  ngOnInit(): void {
+    console.log("INITIAL APP LOAD");
+    this.store.dispatch(SportStore.initialLoadSports());
+  }
 }

@@ -6,7 +6,7 @@
   </div>
   <div class="row justify-content-md-center">
     <div class="col col-sm-8">
-      <div class="row border rounded mt-2" *ngFor="let sport of sports">
+      <div class="row border rounded mt-2" *ngFor="let sport of sports | async">
         <div class="col col-sm-2 align-self-center">
           <img class="border-0" height="80px" src="{{getImageForSport(sport.type)}}"/>
         </div>
@@ -14,7 +14,7 @@
           <h3>{{sport.name}}</h3>
         </div>
         <div class="col col-sm-2 align-self-center">
-          <button class="btn btn-primary" (click)="chooseSport(sport.id)">Lets Go!</button>
+          <button class="btn btn-primary" (click)="chooseSport(sport)">Lets Go!</button>
         </div>
       </div>
     </div>

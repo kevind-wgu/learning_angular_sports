@@ -1,7 +1,7 @@
 export enum SportType {
-  basketball,
-  football,
-  soccer,
+  basketball = "basketball",
+  football = "football",
+  soccer = "soccer",
 }
 
 export function getImageForSport(type: SportType) : string {
@@ -14,6 +14,7 @@ export function getImageForSport(type: SportType) : string {
   if (type == SportType.soccer) {
     return '/assets/images/soccer.png';
   }
+  console.log("Type Not Found", type, SportType.soccer);
   return '';
 }
 
