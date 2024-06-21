@@ -1,1 +1,56 @@
-<p>teams works!</p>
+<form #f="ngForm">
+  <div class="row g-3 align-items-center">
+    <div class="col-auto">
+      <h2>Teams</h2>
+    </div>
+    <div class="col-auto">
+      <label for="filter">Filter</label>
+    </div>
+    <div class="col-auto">
+      <input type="filter" class="form-control" id="filter" name="filter" ngModel #filter>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-primary" (click)="clearForm()">CLEAR</button>
+    </div>
+  </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-striped">
+      <thead>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col">Offensive Rating</th>
+        <th scope="col">Defensive Rating</th>
+        <th scope="col"></th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of filteredTeams; let i=index">
+          <th scope="row">{{team.abbr}}</th>
+          <td>{{team.name}}</td>
+          <td>{{team.offensiveRating}}</td>
+          <td>{{team.defensiveRating}}</td>
+          <td>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary"
+              title="Schedule"
+              ><span class="bi bi-calendar2-minus h5"></span>
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary"
+              title="Edit"
+              ><span class="bi bi-card-list h5"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="row justify-content-end">
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary">Add Team</button>
+  </div>
+</div>
