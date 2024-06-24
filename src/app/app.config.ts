@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/app.store';
 import { EffectsModule } from '@ngrx/effects';
-import { SportsEffects } from './sports/sport.store';
+import { SportsEffects } from './sports/sports.store';
 import { provideHttpClient } from '@angular/common/http';
 import { SportGuardClass } from './sports/sports.guard';
 import { TeamEffects } from './teams/teams.store';

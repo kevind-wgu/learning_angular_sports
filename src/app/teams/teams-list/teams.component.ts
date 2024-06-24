@@ -1,25 +1,28 @@
 import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { Team } from '../models';
+import { Team } from '../../models';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Observable, Subscription, map } from 'rxjs';
-import { environment } from "../../environments/environment";
+import { environment } from "../../../environments/environment";
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Store } from '@ngrx/store';
-import { AppState } from '../store/app.store';
+import { AppState } from '../../store/app.store';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
   templateUrl: './teams.component.html',
   styleUrl: './teams.component.css'
 })
 export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
   @ViewChild("f") form!: NgForm;
-  subs : Subscription[] = [];
+  subs: Subscription[] = [];
 
-  teams?: Team[] = [];
+  teams: Team[] = [];
+  filter: string = "";
+
   // teams?: Observable<Team[]>;
   //   {id: '1', name: 'Brigam Young University', abbr: 'BYU', offensiveRating: 10, defensiveRating: 20},
   //   {id: '1', name: 'University of Utah', abbr: 'UOU', offensiveRating: 11, defensiveRating: 21},
@@ -40,7 +43,7 @@ export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   ngAfterViewInit(): void {
     const sub = this.form.valueChanges?.subscribe(change => {
-      const fStr = this.form.value['filter'].toUpperCase();
+      this.filter = this.form.value['filter'].toUpperCase();
     });
     if (sub) this.subs.push(sub);
   }
@@ -50,11 +53,9 @@ export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   filterTeams(teams: Team[]): Team[] {
-    // TODO: Get the filter working again.
-
-
-    return teams;
-    // return teams.filter(team => team.name.toUpperCase().startsWith(fStr) || team.abbr.toUpperCase().startsWith(fStr));
+    return teams.filter(team => team.name.toUpperCase().startsWith(this.filter) || 
+      team.abbr.toUpperCase().startsWith(this.filter))
+      .sort((t1, t2) => t1.abbr.localeCompare(t2.abbr));
   }
 
   clearForm() {

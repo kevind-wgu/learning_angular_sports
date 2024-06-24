@@ -17,3 +17,11 @@
     </ul>
   </div>
 </nav>
+<div class="row" *ngIf="currentSport">
+  <div class="col col-sm-2 align-self-center">
+    <img class="border-0" height="80px" src="{{getImageForSport(currentSport.type)}}"/>
+  </div>
+  <div class="col col-sm-8 h1 align-self-center">
+    {{currentSport.name}}
+  </div>
+</div>

@@ -25,7 +25,7 @@
         <th scope="col"></th>
       </thead>
       <tbody>
-        <tr *ngFor="let team of teams; let i=index">
+        <tr *ngFor="let team of filterTeams(teams); let i=index">
           <th scope="row">{{team.abbr}}</th>
           <td>{{team.name}}</td>
           <td>{{team.offensiveRating}}</td>
@@ -41,6 +41,7 @@
               type="button" 
               class="btn btn-sm btn-outline-primary"
               title="Edit"
+              routerLink="{{team.id}}/edit"
               ><span class="bi bi-card-list h5"></span>
             </button>
           </td>
@@ -51,6 +52,6 @@
 </div>
 <div class="row justify-content-end">
   <div class="col-auto">
-    <button type="button" class="btn btn-primary">Add Team</button>
+    <button routerLink="new" class="btn btn-primary">Add Team</button>
   </div>
 </div>

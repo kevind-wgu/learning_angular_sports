@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { AppState } from './store/app.store';
 import { Store } from '@ngrx/store';
-import * as SportStore from './sports/sport.store';
+import * as SportStore from './sports/sports.store';
 
 @Component({
   selector: 'app-root',

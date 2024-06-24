@@ -13,12 +13,12 @@ export class SportGuardClass {
     return this.store.select('sports').pipe(
         take(1),
         map(sports => {
-          console.log("SportGuard A", sports)
+          // console.log("SportGuard A", sports)
           if (!sports.currentSport) {
-            console.log("SportGuard B.1", sports)
+            // console.log("SportGuard B.1", sports)
             return this.router.createUrlTree(['/sports']);
           }
-          console.log("SportGuard C", sports)
+          // console.log("SportGuard C", sports)
           return true;
         }),
       );

@@ -1,6 +1,6 @@
 import { ActionReducerMap } from "@ngrx/store";
 import { Schedule, Sport, Team } from "../models";
-import * as SportStore from "../sports/sport.store";
+import * as SportStore from "../sports/sports.store";
 import * as TeamStore from "../teams/teams.store";
 
 export interface AppState {
