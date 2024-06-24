@@ -8,6 +8,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { SportsEffects } from './sports/sport.store';
 import { provideHttpClient } from '@angular/common/http';
 import { SportGuardClass } from './sports/sports.guard';
+import { TeamEffects } from './teams/teams.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,7 +17,7 @@ export const appConfig: ApplicationConfig = {
     SportGuardClass,
     importProvidersFrom(
       StoreModule.forRoot(appReducer, {}),
-      EffectsModule.forRoot(SportsEffects),
+      EffectsModule.forRoot(SportsEffects, TeamEffects),
     ),
   ]
 };

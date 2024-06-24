@@ -25,7 +25,7 @@
         <th scope="col"></th>
       </thead>
       <tbody>
-        <tr *ngFor="let team of filteredTeams; let i=index">
+        <tr *ngFor="let team of teams; let i=index">
           <th scope="row">{{team.abbr}}</th>
           <td>{{team.name}}</td>
           <td>{{team.offensiveRating}}</td>
