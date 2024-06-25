@@ -6,8 +6,8 @@ import { getImageForSport } from '../models';
 import { AppState } from '../store/app.store';
 import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
-import * as SportStore from './sports.store';
-import * as TeamStore from '../teams/teams.store';
+import * as SportStore from '../store/sports.store';
+import * as TeamStore from '../store/teams.store';
 
 @Component({
   selector: 'app-sports',

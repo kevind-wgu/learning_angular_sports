@@ -1,1 +1,21 @@
-<p>schedule works!</p>
+<form [formGroup]="form">
+  <div class="row g-3 align-items-center">
+    <div class="col-auto">
+      <h2>Schedules</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col col-sm-1">
+      
+    </div>
+    <div class="col col-sm-1">vs</div>
+    <div class="col col-sm-1"></div>
+    <div class="col col-sm-1">Date</div>
+  </div>
+</form>
+<div class="row" *ngFor="let item of schedules">
+  <div class="col col-sm-1">{{getTeam(item.teamAId)?.abbr}}</div>
+  <div class="col col-sm-1">vs</div>
+  <div class="col col-sm-1">{{getTeam(item.teamBId)?.abbr}}</div>
+  <div class="col col-auto">{{item.date | date}}</div>
+</div>

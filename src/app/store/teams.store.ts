@@ -6,8 +6,9 @@ import { HttpClient } from "@angular/common/http";
 import { AppState } from "../store/app.store";
 import { environment } from "../../environments/environment";
 import { Team } from "../models";
-import * as SportsStore from "../sports/sports.store";
+import * as SportsStore from "../store/sports.store";
 import { map, of, switchMap, tap, withLatestFrom } from "rxjs";
+import { DatastoreService } from "../datastore.service";
 
 const URL = environment.firebaseUrl;
 
@@ -42,7 +43,7 @@ export const teamReducer = createReducer(
   }),
   on(addTeam, (state, action) => {
     const teams = [...state.teams];
-    const newTeam = {...action.team, id: crypto.randomUUID()};
+    const newTeam = {...action.team};
     teams.push(newTeam);
     return {...state, teams: teams};
   }),
@@ -53,21 +54,12 @@ export const teamReducer = createReducer(
   }),
 );
 
-function toFirebase(team: Team) : any {
-  return { 
-    abbr: team.abbr,
-    name: team.name,
-    offensiveRating: team.offensiveRating,
-    defensiveRating: team.defensiveRating,
-  }
-}
-
 @Injectable()
 export class TeamEffects {
   constructor(
     private actions$: Actions, 
     private store: Store<AppState>, 
-    private http: HttpClient,
+    private datastore: DatastoreService,
   ) {}
 
   loadTeams= createEffect(
@@ -77,13 +69,7 @@ export class TeamEffects {
       switchMap(([action, sportStore]) => {
         console.log("Load Team Effect", sportStore);
         if (sportStore.currentSport) {
-          return this.http.get<{[key: string]: Team}>(URL + `/teams/${sportStore.currentSport?.id}.json`).pipe(
-            map(teamObj=> {
-              return Object.keys(teamObj).map(key => {
-                return {...teamObj[key], id: key} as Team;
-              })
-            })
-          )
+          return this.datastore.loadTeams(sportStore.currentSport);
         }
         return of([]);
       }),
@@ -95,35 +81,14 @@ export class TeamEffects {
 
   editTeam = createEffect(
     () => this.actions$.pipe(
-      ofType(editTeam),
+      ofType(editTeam, addTeam),
       withLatestFrom(this.store.select('sports')),
       tap(([action, sportsStore]) => {
         if (sportsStore.currentSport) {
-          const team = action.team;
-          const teamId = action.team.id;
-          this.http.put(URL + `/teams/${sportsStore.currentSport.id}/${teamId}.json`, toFirebase(team)).subscribe(res => {
-            console.log("Team Updated", teamId);
-          })
+          this.datastore.updateTeam(sportsStore.currentSport, action.team);
         }
       }),
     ),
     {dispatch: false}
   );
-
-  addTeam = createEffect(
-    () => this.actions$.pipe(
-      ofType(addTeam),
-      withLatestFrom(this.store.select('sports')),
-      tap(([action, sportsStore]) => {
-        if (sportsStore.currentSport) {
-          const team = action.team;
-          const teamId = action.team.id;
-          this.http.put(URL + `/teams/${sportsStore.currentSport.id}/${teamId}.json`, toFirebase(team)).subscribe(res => {
-            console.log("Team Added", teamId);
-          })
-        }
-      }),
-    ),
-    {dispatch: false}
-  )
 }

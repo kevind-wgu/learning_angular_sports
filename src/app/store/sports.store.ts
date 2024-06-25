@@ -1,14 +1,9 @@
-import { Store, createAction, createReducer, on, props } from "@ngrx/store";
-import { Sport, SportType } from "../models";
+import { createAction, createReducer, on, props } from "@ngrx/store";
+import { Sport } from "../models";
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { AppState } from "../store/app.store";
-import { Router } from "@angular/router";
-import { Observable, map, of, switchMap, tap, withLatestFrom } from "rxjs";
-import { HttpClient } from "@angular/common/http";
-import { environment } from "../../environments/environment";
-
-const URL = environment.firebaseUrl;
+import { map, of, switchMap, tap } from "rxjs";
+import { DatastoreService } from "../datastore.service";
 
 export interface State {
   sports: Sport[],
@@ -45,9 +40,7 @@ export const sportReducer = createReducer(
 export class SportsEffects {
   constructor(
     private actions$: Actions, 
-    private store: Store<AppState>, 
-    private router: Router, 
-    private http: HttpClient,
+    private datastore: DatastoreService,
   ) {}
 
   initialLoadSports = createEffect(
@@ -61,14 +54,11 @@ export class SportsEffects {
           return of({sports: sports, loadedFromLocal: true});
         }
         console.log("Load Sports Effect: Firebase");
-        return this.http.get<{[key: string]: Sport}>(URL + '/sports.json').pipe(
-          map(sportObj => {
-            const sports: Sport[] = Object.keys(sportObj).map(key => {
-              return {...sportObj[key], id: key} as Sport;
-            });
+        return this.datastore.getSports().pipe(
+          map(sports => {
             return {sports: sports, loadedFromLocal: false}
           })
-        )
+        );
       }),
       map((sports) => {
         return setSports(sports);

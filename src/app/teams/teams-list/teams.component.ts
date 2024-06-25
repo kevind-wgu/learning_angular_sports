@@ -2,8 +2,7 @@ import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit, SimpleChanges, 
 import { Team } from '../../models';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Observable, Subscription, map } from 'rxjs';
-import { environment } from "../../../environments/environment";
+import { Subscription } from 'rxjs';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.store';

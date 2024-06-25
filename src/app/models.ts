@@ -38,6 +38,10 @@ export interface Score {
   entryDate: Date;
 }
 
+export interface Season {
+  year: number;
+}
+
 export interface Schedule {
   id: string
   teamAId: string;
