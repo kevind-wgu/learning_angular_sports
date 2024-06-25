@@ -4,13 +4,53 @@
       <h2>Schedules</h2>
     </div>
   </div>
+  <!-- <div class="row h3">
+    <div class="col col-sm-1">
+      Home
+    </div>
+    <div class="col col-sm-1">
+    </div>
+    <div class="col col-sm-1">
+      Away
+    </div>
+    <div class="col col-sm-1">
+    </div>
+  </div> -->
+
   <div class="row">
     <div class="col col-sm-1">
-      
+      <label for="teamA" class="form-label">Home</label>
+      <input class="form-control" formControlName="teamA" list="teamAOptions" id="teamAOptionsList"  #teamAFocus>
+      <datalist id="teamAOptions">
+        <ng-container *ngFor="let team of teams">
+          <option value="{{team.abbr}}">
+        </ng-container>
+      </datalist>
     </div>
     <div class="col col-sm-1">vs</div>
-    <div class="col col-sm-1"></div>
-    <div class="col col-sm-1">Date</div>
+    <div class="col col-sm-1">
+      <label for="teamB" class="form-label">Away</label>
+      <input class="form-control" formControlName="teamB" list="teamBOptions" id="teamAOptionsList">
+      <datalist id="teamBOptions">
+        <ng-container *ngFor="let team of teams">
+          <option value="{{team.abbr}}">
+        </ng-container>
+      </datalist>
+    </div>
+    <div class="col col-sm-3">
+      <label for="date" class="form-label">Date</label>
+      <div class="input-group">
+        <input type="text" class="form-control" (keydown.enter)="d.toggle()" keyformControlName="date" ngbDatepicker #d="ngbDatepicker"/>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="d.toggle()" tabindex="-1">
+          <span class="bi bi-calendar h5"></span>
+        </button>
+      </div>
+    </div>
+    <div class="col col-sm-1 align-bottom align-self-end">
+      <button type="button" class="btn btn-sm btn-primary" (click)="addSchedule()">
+        <span class="bi bi-plus h5"></span>
+      </button>
+    </div>
   </div>
 </form>
 <div class="row" *ngFor="let item of schedules">
