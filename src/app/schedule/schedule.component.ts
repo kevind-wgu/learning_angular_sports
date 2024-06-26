@@ -7,6 +7,7 @@ import { DatastoreService } from '../datastore.service';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbDatepickerModule, NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
 
 function createTeamExistsValidator(teamSupplier: TeamSupplier) : ValidatorFn {
   return (control => {
@@ -34,7 +35,7 @@ interface TeamSupplier {
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgbDatepickerModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbDatepickerModule, SeasonSelectorComponent],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css'
 })
@@ -90,8 +91,10 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   }
 
   private loadSchedules() {
+    console.log("Load Schedules");
     if (this.season && this.sport) {
       this.datastore.getSchedules(this.sport, this.season).subscribe(schedules => {
+        console.log("Set Schedules");
         this.schedules = schedules;
       });
     }

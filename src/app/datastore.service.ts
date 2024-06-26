@@ -63,6 +63,12 @@ export class DatastoreService {
     );
   }
 
+  addSeason(sport: Sport, season: Season) : Subscription {
+    return this.http.put(URL + `/sports/${sport.id}/seasons/${season.year}.json`, true).subscribe(res => {
+      console.log("Season Added", season);
+    });
+  }
+
   getSchedules(sport: Sport, season: Season) : Observable<Schedule[]> {
     return this.http.get<{[key: string]: Schedule}>(URL + `/schedules/${sport.id}/${season.year}.json`).pipe(
       map(schedObj => {

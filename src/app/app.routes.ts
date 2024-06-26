@@ -6,6 +6,7 @@ import { SportsSelectComponent } from './sports/sports-select/sports-select.comp
 import { SportGuard } from './sports/sports.guard';
 import { TeamAddComponent } from './teams/team-edit/team-edit.component';
 import { SportEditComponent } from './sports/sport-edit/sport-edit.component';
+import { AddSeasonComponent } from './season/add-season/add-season.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/teams', pathMatch: 'full'},
@@ -20,4 +21,5 @@ export const routes: Routes = [
     {path: '', component: SportsSelectComponent},
     {path: 'new', component: SportEditComponent},
   ]},
+  {path: 'season/new', component: AddSeasonComponent, canActivate: [SportGuard]},
 ];
