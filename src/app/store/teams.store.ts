@@ -37,7 +37,8 @@ export const addTeam = createAction('[Teams] Add Team',
 export const teamReducer = createReducer(
   INITIAL_STATE,
   on(setTeams, (state, action) => {
-    const newState = {...state, teams: action.teams};
+    var teams = [...action.teams].sort((t1, t2) => t1.abbr.localeCompare(t2.abbr));
+    const newState = {...state, teams: teams};
     console.log("Set Teams", newState);
     return newState;
   }),

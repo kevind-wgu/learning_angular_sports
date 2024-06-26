@@ -53,8 +53,7 @@ export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
 
   filterTeams(teams: Team[]): Team[] {
     return teams.filter(team => team.name.toUpperCase().startsWith(this.filter) || 
-      team.abbr.toUpperCase().startsWith(this.filter))
-      .sort((t1, t2) => t1.abbr.localeCompare(t2.abbr));
+      team.abbr.toUpperCase().startsWith(this.filter));
   }
 
   clearForm() {
