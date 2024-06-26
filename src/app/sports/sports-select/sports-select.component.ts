@@ -1,22 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { Sport } from '../models';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { getImageForSport } from '../models';
-import { AppState } from '../store/app.store';
 import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
-import * as SportStore from '../store/sports.store';
-import * as TeamStore from '../store/teams.store';
+
+import { Sport } from '../../models';
+import { getImageForSport } from '../../models';
+import { AppState } from '../../store/app.store';
+import * as SportStore from '../../store/sports.store';
+import * as TeamStore from '../../store/teams.store';
 
 @Component({
   selector: 'app-sports',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './sports.component.html',
-  styleUrl: './sports.component.css'
+  templateUrl: './sports-select.component.html',
+  styleUrl: './sports-select.component.css'
 })
-export class SportsComponent implements OnInit {
+export class SportsSelectComponent implements OnInit {
   sports?: Observable<Sport[]>;
   getImageForSport = getImageForSport;
 
@@ -24,7 +25,6 @@ export class SportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.sports = this.store.select('sports').pipe(map(state => {
-      console.log("SportsComponent select");
       return state.sports;
     }));
   }
