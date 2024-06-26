@@ -5,6 +5,7 @@ import { ScheduleComponent } from './schedule/schedule.component';
 import { SportsSelectComponent } from './sports/sports-select/sports-select.component';
 import { SportGuard } from './sports/sports.guard';
 import { TeamAddComponent } from './teams/team-edit/team-edit.component';
+import { SportEditComponent } from './sports/sport-edit/sport-edit.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/teams', pathMatch: 'full'},
@@ -15,5 +16,8 @@ export const routes: Routes = [
   ]},
   {path: 'scores', component: ScoreEntryComponent, canActivate: [SportGuard]},
   {path: 'schedule', component: ScheduleComponent, canActivate: [SportGuard]},
-  {path: 'sports', component: SportsSelectComponent},
+  {path: 'sports', children: [
+    {path: '', component: SportsSelectComponent},
+    {path: 'new', component: SportEditComponent},
+  ]},
 ];

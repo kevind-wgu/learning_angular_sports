@@ -25,6 +25,12 @@ export class DatastoreService {
     );
   }
 
+  updateSport(sport: Sport) : Subscription {
+    return this.http.put(URL + `/sports/${sport.id}.json`, sport).subscribe(res => {
+      console.log("Team Updated", sport.id);
+    });
+  }
+
   loadTeams(sport: Sport) : Observable<Team[]> {
     return this.http.get<{[key: string]: Team}>(URL + `/teams/${sport.id}.json`).pipe(
       map(teamObj=> {
@@ -39,15 +45,17 @@ export class DatastoreService {
   }
 
   updateTeam(sport: Sport, team: Team) : Subscription {
-    const teamId = team.id;
-    return this.http.put(URL + `/teams/${sport.id}/${teamId}.json`, team).subscribe(res => {
-      console.log("Team Updated", teamId);
+    return this.http.put(URL + `/teams/${sport.id}/${team.id}.json`, team).subscribe(res => {
+      console.log("Team Updated", team.id);
     });
   }
 
   getSeasons(sport: Sport) : Observable<Season[]> {
     return this.http.get<{[key: string]: boolean}>(URL + `/sports/${sport.id}/seasons.json`).pipe(
       map(seasonObj => {
+        if (!seasonObj) {
+          return [];
+        }
         return Object.keys(seasonObj).map(key => {
           return {year: +key} as Season;
         })

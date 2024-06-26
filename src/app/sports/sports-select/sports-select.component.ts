@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
 
@@ -13,7 +13,7 @@ import * as TeamStore from '../../store/teams.store';
 @Component({
   selector: 'app-sports',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './sports-select.component.html',
   styleUrl: './sports-select.component.css'
 })

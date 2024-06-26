@@ -24,14 +24,22 @@ export const setCurrentSport = createAction('[Sports] Set Current',
   props<{sport: Sport | null}>()
 );
 
+export const addSport = createAction('[Sports] Add Sport', 
+  props<{sport: Sport}>()
+);
+
 export const sportReducer = createReducer(
   INITIAL_STATE,
   on(setSports, (state, action) => {
-    return {...state, sports: action.sports};
+    var sports = [...action.sports].sort((s1, s2) => s1.name.localeCompare(s2.name));
+    return {...state, sports: sports};
   }),
   on(setCurrentSport, (state, action) => {
-    console.log("Current Sport", action.sport);
     return {...state, currentSport: (action.sport? action.sport : null)};
+  }),
+  on(addSport, (state, action) => {
+    var sports = ([...state.sports, action.sport] as Sport[]).sort((s1, s2) => s1.name.localeCompare(s2.name));
+    return {...state, sports: sports};
   }),
 );
 
@@ -107,4 +115,14 @@ export class SportsEffects {
     ),
     {dispatch: false}
   )
+
+  addSport = createEffect(
+    () => this.actions$.pipe(
+      ofType(addSport),
+      tap((action) => {
+        this.datastore.updateSport(action.sport);
+      }),
+    ),
+    {dispatch: false}
+  );
 }
