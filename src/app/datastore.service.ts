@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from "../environments/environment";
 import { HttpClient } from '@angular/common/http';
 import { Schedule, Season, Sport, Team } from './models';
-import { Observable, Subscription, map } from 'rxjs';
+import { Observable, Subscription, map, tap } from 'rxjs';
 
 const URL = environment.firebaseUrl;
 
@@ -53,10 +53,27 @@ export class DatastoreService {
     return this.http.get<{[key: string]: Schedule}>(URL + `/schedules/${sport.id}/${season.year}.json`).pipe(
       map(schedObj => {
         return Object.keys(schedObj).map(key => {
-          return {...schedObj[key], id: key} as Schedule;
+          return schedObj[key];
         })
       })
     );
+  }
+
+  addSchedule(sport: Sport, season: Season, sched: Schedule) : Observable<any> {
+    return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`, sched).pipe(
+      tap(res => {
+        console.log("Schedule Added");
+      })
+    )
+  }
+
+  deleteSchedule(sport: Sport, season: Season, sched: Schedule) : Observable<any> {
+    console.log("Delete Schedule", URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`);
+    return this.http.delete(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`).pipe(
+      tap(res => {
+        console.log("Schedule Deleted");
+      })
+    )
   }
 
   private teamToFirebase(team: Team) : any {

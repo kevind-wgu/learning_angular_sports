@@ -4,19 +4,6 @@
       <h2>Schedules</h2>
     </div>
   </div>
-  <!-- <div class="row h3">
-    <div class="col col-sm-1">
-      Home
-    </div>
-    <div class="col col-sm-1">
-    </div>
-    <div class="col col-sm-1">
-      Away
-    </div>
-    <div class="col col-sm-1">
-    </div>
-  </div> -->
-
   <div class="row">
     <div class="col col-sm-1">
       <label for="teamA" class="form-label">Home</label>
@@ -40,7 +27,7 @@
     <div class="col col-sm-3">
       <label for="date" class="form-label">Date</label>
       <div class="input-group">
-        <input type="text" class="form-control" (keydown.enter)="d.toggle()" keyformControlName="date" ngbDatepicker #d="ngbDatepicker"/>
+        <input type="text" class="form-control" (keydown.enter)="d.toggle()" formControlName="date" ngbDatepicker #d="ngbDatepicker"/>
         <button type="button" class="btn btn-sm btn-secondary" (click)="d.toggle()" tabindex="-1">
           <span class="bi bi-calendar h5"></span>
         </button>
@@ -53,9 +40,14 @@
     </div>
   </div>
 </form>
-<div class="row" *ngFor="let item of schedules">
+<div class="row mt-2" *ngFor="let item of schedules">
   <div class="col col-sm-1">{{getTeam(item.teamAId)?.abbr}}</div>
   <div class="col col-sm-1">vs</div>
   <div class="col col-sm-1">{{getTeam(item.teamBId)?.abbr}}</div>
-  <div class="col col-auto">{{item.date | date}}</div>
+  <div class="col col-sm-3">{{item.date | date}}</div>
+  <div class="col col-auto">
+    <button type="button" class="btn btn-sm btn-outline-primary" (click)="deleteSchedule(item)" tabindex="-1">
+      <span class="bi bi-trash h5"></span>
+    </button>
+  </div>
 </div>
