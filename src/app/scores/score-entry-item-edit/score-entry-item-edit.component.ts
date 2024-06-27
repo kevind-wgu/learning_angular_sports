@@ -15,7 +15,8 @@ import { Schedule, Score, Season, Sport, Team, findById } from '../../models';
   styleUrl: './score-entry-item-edit.component.css'
 })
 export class ScoreEntryItemEditComponent implements OnInit {
-  @Input() teams!: Team[];
+  @Input() teamA?: Team;
+  @Input() teamB?: Team;
   @Input() schedule!: Schedule;
   @Output() saveScore: EventEmitter<{schedule: Schedule, score: Score}> = new EventEmitter();
   form!: FormGroup;
@@ -30,14 +31,8 @@ export class ScoreEntryItemEditComponent implements OnInit {
     });
   }
 
-  getTeam(teamId: string) : Team | null {
-    return findById(this.teams, teamId);
-  }
-
   submitScore() {
-    console.log("Submit Score A", this.form);
     if (this.form.valid) {
-      console.log("Submit Score B");
       this.saveScore.emit({
         schedule: this.schedule,
         score: {

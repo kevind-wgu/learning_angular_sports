@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { SeasonSelectorComponent } from '../../season/season-selector/season-selector.component';
 import { CommonModule } from '@angular/common';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { Subscription, debounceTime, distinctUntilChanged, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { Schedule, Season, Sport, Team, teamNameMatches, findById, Score } from '../../models';
+import { Schedule, Season, Sport, Team, teamNameMatches, Score, keyById } from '../../models';
 import { AppState } from '../../store/app.store';
 import { DatastoreService } from '../../datastore.service';
 import { NgbDate, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
@@ -25,6 +25,7 @@ export class ScoreEntryComponent {
   private schedules: Schedule[] = [];
   private season?: Season;
   teams: Team[] = [];
+  teamsHash: {[key:string]: Team} = {};
   subs: Subscription[] = [];
   form!: FormGroup;
   filteredSchedules: Schedule[] = [];
@@ -70,11 +71,12 @@ export class ScoreEntryComponent {
 
     this.subs.push(this.store.select('teams').subscribe(teamState => {
       this.teams = teamState.teams;
+      this.teamsHash = keyById(teamState.teams);
     }));
   }
 
   getTeam(teamId: string) : Team | null {
-    return findById(this.teams, teamId);
+    return this.teamsHash[teamId];
   }
 
   private getNow(adjust: number) {
@@ -90,7 +92,7 @@ export class ScoreEntryComponent {
   }
 
   private filterSchedules(filter: string) {
-    console.log("Filter By:", filter);
+    // console.log("Filter By:", filter);
     this.filteredSchedules = this.schedules.filter(s => {
       const teams: (Team | null)[] = [this.getTeam(s.teamAId), this.getTeam(s.teamBId)];
       const found = teams.find(t => !t || !filter || teamNameMatches(t, filter));
@@ -102,7 +104,7 @@ export class ScoreEntryComponent {
     if (this.season && this.sport) {
       const beginDate = this.toDate(this.form.value.beginDate);
       const endDate = this.toDate(this.form.value.endDate);
-      console.log("Search ", beginDate, endDate)
+      // console.log("Search ", beginDate, endDate)
       this.datastore.getSchedules(this.sport, this.season, beginDate, endDate).subscribe(schedules => {
         this.schedules = schedules;
         this.filterSchedules(this.form.value.teamFilter);
@@ -112,10 +114,10 @@ export class ScoreEntryComponent {
 
   saveScore(event: {schedule: Schedule, score: Score}) {
     if (this.sport && this.season) {
-      console.log("Save Score", event);
+      // console.log("Save Score", event);
       this.datastore.saveScore(this.sport, this.season, event.schedule, event.score ).subscribe(res => {
         event.schedule.score = event.score;
-        console.log("Save Score Complete");
+        // console.log("Save Score Complete");
       });
     }
   }

@@ -85,15 +85,16 @@ export class DatastoreService {
       params['orderBy'] = '"date"';
     }
     const query = URL + `/schedules/${sport.id}/${season.year}.json`
-    console.log("getSchedules", query, params);
     return this.http.get<{[key: string]: Schedule}>(query, {params: params}).pipe(
       map(schedObj => {
         if (!schedObj) {
           return [];
         }
         return Object.keys(schedObj).map(key => {
-          return {...schedObj[key]};
+          const obj = schedObj[key];
+          return {...obj, date: new Date(obj.date)};
         })
+        .sort((s1, s2) => s1.date.getDate() - s2.date.getDate());
       })
     );
   }
@@ -101,7 +102,7 @@ export class DatastoreService {
   addSchedule(sport: Sport, season: Season, sched: Schedule) : Observable<any> {
     return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`, sched).pipe(
       tap(res => {
-        console.log("Schedule Added");
+        console.log("Schedule Added", sched);
       })
     )
   }
@@ -110,7 +111,7 @@ export class DatastoreService {
     console.log("Delete Schedule", URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`);
     return this.http.delete(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`).pipe(
       tap(res => {
-        console.log("Schedule Deleted");
+        console.log("Schedule Deleted", sched);
       })
     )
   }
@@ -118,7 +119,7 @@ export class DatastoreService {
   saveScore(sport: Sport, season: Season, sched: Schedule, score: Score) : Observable<any> {
     return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}/score.json`, score).pipe(
       tap(res => {
-        console.log("Score Saved");
+        console.log("Score Saved", sched);
       })
     )
   }

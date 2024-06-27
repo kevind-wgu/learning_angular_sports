@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { NgbDatepickerModule, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
-import { Schedule, Season, Sport, Team, findById} from '../models';
+import { Schedule, Season, Sport, Team, keyById} from '../models';
 import { AppState } from '../store/app.store';
 import { DatastoreService } from '../datastore.service';
 import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
@@ -66,7 +66,8 @@ interface TeamSupplier {
 export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   season?: Season;
   sport?: Sport;
-  teams: Team[] = [];
+  teams: Team[]= [];
+  teamsHash: {[key:string]: Team} = {};
   schedules: Schedule[] = [];
   subs: Subscription[] = [];
   form!: FormGroup;
@@ -103,6 +104,7 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
 
     this.subs.push(this.store.select('teams').subscribe(teamState => {
       this.teams = teamState.teams;
+      this.teamsHash = keyById(teamState.teams);
     }));
 
     this.disableAnimations();
@@ -132,7 +134,7 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   }
 
   getTeam(teamId: string) : Team | null {
-    return findById(this.teams, teamId);
+    return this.teamsHash[teamId];
   }
 
   skipSubmit() {
@@ -144,7 +146,7 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   }
 
   deleteSchedule(sched: Schedule) {
-    if (this.sport && this.season) {
+    if (this.sport && this.season && !sched.score) {
       this.datastore.deleteSchedule(this.sport, this.season, sched).subscribe(res => {
         const index = this.schedules.findIndex(s => s.id === sched.id);
         if (index >= 0) {

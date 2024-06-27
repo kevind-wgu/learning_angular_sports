@@ -15,16 +15,13 @@ import { Schedule, Score, Season, Sport, Team, findById } from '../../models';
   styleUrl: './score-entry-item-display.component.css'
 })
 export class ScoreEntryItemDisplayComponent implements OnInit {
-  @Input() teams!: Team[];
+  @Input() teamA?: Team;
+  @Input() teamB?: Team;
   @Input() schedule!: Schedule;
 
   constructor(private store: Store<AppState>, private datastore: DatastoreService) {
   }
 
   ngOnInit(): void {
-  }
-
-  getTeam(teamId: string) : Team | null {
-    return findById(this.teams, teamId);
   }
 }

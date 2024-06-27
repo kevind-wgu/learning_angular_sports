@@ -29,13 +29,14 @@
     </div>
   </form>
   <div class="row mt-2">
-    <div class="col col-auto h3">Too Score</div>
+    <div class="col col-auto h3">Score</div>
   </div>
   <div class="row border rounded pb-2 pt-2">
     <div *ngFor="let sched of filteredSchedules; index as i">
       <app-score-entry-item-edit
         *ngIf="!sched.score"
-        [teams]="teams"
+        [teamA]="teamsHash[sched.teamAId]"
+        [teamB]="teamsHash[sched.teamBId]"
         [schedule]="sched"
         (saveScore)="saveScore($event)"
 
@@ -43,13 +44,14 @@
     </div>
   </div>
   <div class="row mt-2">
-    <div class="col col-auto h3">Scored Entries</div>
+    <div class="col col-auto h3">Already Scored</div>
   </div>
   <div class="row border rounded pb-2 pt-2">
     <div *ngFor="let sched of filteredSchedules; index as i">
       <app-score-entry-item-display
         *ngIf="sched.score"
-        [teams]="teams"
+        [teamA]="teamsHash[sched.teamAId]"
+        [teamB]="teamsHash[sched.teamBId]"
         [schedule]="sched"
       ></app-score-entry-item-display>
     </div>

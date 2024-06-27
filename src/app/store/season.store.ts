@@ -64,7 +64,7 @@ export class SeasonEffects {
       ofType(SportsStore.setCurrentSport),
       withLatestFrom(this.store.select('sports')),
       switchMap(([action, sportStore]) => {
-        console.log("Load Team Effect", sportStore);
+        // console.log("Load Season Effect", sportStore);
         if (sportStore.currentSport) {
           return this.datastore.getSeasons(sportStore.currentSport);
         }

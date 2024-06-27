@@ -59,6 +59,15 @@ export function findById<T extends {id: string}>(objs : T[], id: string) : T | n
   return found ? found : null;
 }
 
+export function keyById<T extends {id: string}>(objs : T[]) : {[key: string]: T} {
+  if (!objs) {
+    return {};
+  }
+  return objs.reduce((obj, value) => {
+    return {...obj, [value.id]: value};
+  }, {});
+}
+
 export function teamNameMatches(team: Team, checkMatchString: string) : boolean {
   const checkMatchStringUpper = checkMatchString ? checkMatchString.toUpperCase() : '';
   return !checkMatchString || 

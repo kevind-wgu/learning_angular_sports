@@ -1,7 +1,9 @@
 <div class="row">
-  <div class="col col-sm-auto">{{getTeam(schedule.teamAId)?.abbr}}</div>
+  <div class="col col-sm-auto">{{teamA?.abbr}}</div>
+  <div class="col col-sm-auto d-none d-md-block">{{teamA?.name}}</div>
   <div class="col col-sm-1">{{schedule.score?.teamAScore}}</div>
-  <div class="col col-sm-auto">{{getTeam(schedule.teamBId)?.abbr}}</div>
+  <div class="col col-sm-auto">{{teamB?.abbr}}</div>
+  <div class="col col-sm-auto d-none d-md-block">{{teamB?.name}}</div>
   <div class="col col-sm-1">{{schedule.score?.teamBScore}}</div>
   <div class="col col-sm-3">{{schedule.date | date}}</div>
 </div>

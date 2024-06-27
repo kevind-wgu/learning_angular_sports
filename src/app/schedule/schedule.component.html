@@ -42,9 +42,12 @@
     <div class="col col-sm-1">{{getTeam(item.teamBId)?.abbr}}</div>
     <div class="col col-sm-3">{{item.date | date}}</div>
     <div class="col col-auto">
-      <button type="button" class="btn btn-sm btn-outline-primary" (click)="deleteSchedule(item)" tabindex="-1">
+      <button type="button" class="btn btn-sm btn-outline-primary" *ngIf="!item.score" (click)="deleteSchedule(item)" tabindex="-1">
         <span class="bi bi-trash h5"></span>
       </button>
+      <span *ngIf="item.score">
+        Scored
+      </span>
     </div>
   </div>
 </app-season-selector>
