@@ -1,0 +1,57 @@
+<app-season-selector title="Scores">
+
+  <form [formGroup]="form">
+    <div class="row mb-5">
+      <div class="col col-sm-auto">
+        <label for="date" class="form-label">Begin</label>
+        <div class="input-group">
+          <input type="text" class="form-control" (keydown.enter)="beginD.toggle()" formControlName="beginDate" ngbDatepicker #beginD="ngbDatepicker"/>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="beginD.toggle()" tabindex="-1">
+            <span class="bi bi-calendar h5"></span>
+          </button>
+        </div>
+      </div>
+      <div class="col col-sm-auto">
+        <label for="date" class="form-label">End</label>
+        <div class="input-group">
+          <input type="text" class="form-control" (keydown.enter)="endD.toggle()" formControlName="endDate" ngbDatepicker #endD="ngbDatepicker"/>
+          <button type="button" class="btn btn-sm btn-secondary" (click)="endD.toggle()" tabindex="-1">
+            <span class="bi bi-calendar h5"></span>
+          </button>
+        </div>
+      </div>
+      <div class="col col-sm-auto">
+        <label for="date" class="form-label">Filter</label>
+        <input type="text" class="form-control" id="filter" name="teamFilter" formControlName="teamFilter">
+      </div>
+      <div class="col sm-3">
+      </div>
+    </div>
+  </form>
+  <div class="row mt-2">
+    <div class="col col-auto h3">Too Score</div>
+  </div>
+  <div class="row border rounded pb-2 pt-2">
+    <div *ngFor="let sched of filteredSchedules; index as i">
+      <app-score-entry-item-edit
+        *ngIf="!sched.score"
+        [teams]="teams"
+        [schedule]="sched"
+        (saveScore)="saveScore($event)"
+
+      ></app-score-entry-item-edit>
+    </div>
+  </div>
+  <div class="row mt-2">
+    <div class="col col-auto h3">Scored Entries</div>
+  </div>
+  <div class="row border rounded pb-2 pt-2">
+    <div *ngFor="let sched of filteredSchedules; index as i">
+      <app-score-entry-item-display
+        *ngIf="sched.score"
+        [teams]="teams"
+        [schedule]="sched"
+      ></app-score-entry-item-display>
+    </div>
+  </div>
+</app-season-selector>

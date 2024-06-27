@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { TeamsComponent } from './teams/teams-list/teams.component';
-import { ScoreEntryComponent } from './score-entry/score-entry.component';
+import { ScoreEntryComponent } from './scores/score-entry/score-entry.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { SportsSelectComponent } from './sports/sports-select/sports-select.component';
 import { SportGuard } from './sports/sports.guard';

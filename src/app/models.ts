@@ -4,20 +4,6 @@ export enum SportType {
   soccer = "soccer",
 }
 
-export function getImageForSport(type: SportType) : string {
-  if (type == SportType.basketball) {
-    return '/assets/images/basketball.jpeg';
-  }
-  if (type == SportType.football) {
-    return '/assets/images/football.png';
-  }
-  if (type == SportType.soccer) {
-    return '/assets/images/soccer.png';
-  }
-  console.log("Type Not Found", type, SportType.soccer);
-  return '';
-}
-
 export interface Sport {
   id: string;
   name: string;
@@ -49,4 +35,33 @@ export interface Schedule {
   date: Date;
   entryDate: Date;
   score?: Score;
+}
+
+export function getImageForSport(type: SportType) : string {
+  if (type == SportType.basketball) {
+    return '/assets/images/basketball.jpeg';
+  }
+  if (type == SportType.football) {
+    return '/assets/images/football.png';
+  }
+  if (type == SportType.soccer) {
+    return '/assets/images/soccer.png';
+  }
+  console.log("Type Not Found", type, SportType.soccer);
+  return '';
+}
+
+export function findById<T extends {id: string}>(objs : T[], id: string) : T | null {
+  var found;
+  if (objs) {
+    found = objs.find(o => o.id === id);
+  }
+  return found ? found : null;
+}
+
+export function teamNameMatches(team: Team, checkMatchString: string) : boolean {
+  const checkMatchStringUpper = checkMatchString ? checkMatchString.toUpperCase() : '';
+  return !checkMatchString || 
+    team.abbr.toUpperCase().startsWith(checkMatchStringUpper) ||
+    team.name.toUpperCase().startsWith(checkMatchStringUpper);
 }

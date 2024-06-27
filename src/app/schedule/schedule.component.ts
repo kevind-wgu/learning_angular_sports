@@ -1,14 +1,15 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Schedule, Season, Sport, Team } from '../models';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from '../store/app.store';
 import { Subscription, of } from 'rxjs';
-import { DatastoreService } from '../datastore.service';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbDatepickerModule, NgbDate } from '@ng-bootstrap/ng-bootstrap';
-import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+
+import { Schedule, Season, Sport, Team, findById} from '../models';
+import { AppState } from '../store/app.store';
+import { DatastoreService } from '../datastore.service';
+import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
 
 function createTeamExistsValidator(teamSupplier: TeamSupplier) : ValidatorFn {
   return (control => {
@@ -65,7 +66,6 @@ interface TeamSupplier {
 export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   season?: Season;
   sport?: Sport;
-  seasons: Season[] = [];
   teams: Team[] = [];
   schedules: Schedule[] = [];
   subs: Subscription[] = [];
@@ -87,7 +87,6 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
       'date': new FormControl('', [Validators.required]),
     });
     this.subs.push(this.store.select('seasons').subscribe(seasonState => {
-      this.seasons = seasonState.seasons;
       if (seasonState.currentSeason) {
         this.season = seasonState.currentSeason;
         this.loadSchedules();
@@ -132,8 +131,8 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
     }
   }
 
-  getTeam(teamId: string) : Team | undefined {
-    return this.teams.find(t => t.id === teamId);
+  getTeam(teamId: string) : Team | null {
+    return findById(this.teams, teamId);
   }
 
   skipSubmit() {

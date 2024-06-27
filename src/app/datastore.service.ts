@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from "../environments/environment";
 import { HttpClient } from '@angular/common/http';
-import { Schedule, Season, Sport, Team } from './models';
+import { Schedule, Score, Season, Sport, Team } from './models';
 import { Observable, Subscription, map, tap } from 'rxjs';
 
 const URL = environment.firebaseUrl;
@@ -69,8 +69,24 @@ export class DatastoreService {
     });
   }
 
-  getSchedules(sport: Sport, season: Season) : Observable<Schedule[]> {
-    return this.http.get<{[key: string]: Schedule}>(URL + `/schedules/${sport.id}/${season.year}.json`).pipe(
+  private getDateQuery(date: Date, dayAdjust: number): string {
+    const newDate = new Date(date.getTime() + (dayAdjust*24*60*60*1000));
+    return '"' + newDate.toISOString().split('T')[0] + '"';
+  }
+
+  getSchedules(sport: Sport, season: Season, beginDate: Date | null = null, endDate: Date | null = null) : Observable<Schedule[]> {
+    const params: {[key:string]: string} = {};
+    if (beginDate) {
+      params['startAt'] = this.getDateQuery(beginDate, 0);
+      params['orderBy'] = '"date"';
+    }
+    if (endDate) {
+      params['endAt'] = this.getDateQuery(endDate, 1);
+      params['orderBy'] = '"date"';
+    }
+    const query = URL + `/schedules/${sport.id}/${season.year}.json`
+    console.log("getSchedules", query, params);
+    return this.http.get<{[key: string]: Schedule}>(query, {params: params}).pipe(
       map(schedObj => {
         if (!schedObj) {
           return [];
@@ -95,6 +111,14 @@ export class DatastoreService {
     return this.http.delete(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`).pipe(
       tap(res => {
         console.log("Schedule Deleted");
+      })
+    )
+  }
+
+  saveScore(sport: Sport, season: Season, sched: Schedule, score: Score) : Observable<any> {
+    return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}/score.json`, score).pipe(
+      tap(res => {
+        console.log("Score Saved");
       })
     )
   }

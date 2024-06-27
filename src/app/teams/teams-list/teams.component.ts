@@ -1,9 +1,10 @@
-import { AfterViewInit, Component, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { Team } from '../../models';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+
+import { Team, teamNameMatches } from '../../models';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/app.store';
 import { RouterLink } from '@angular/router';
@@ -11,16 +12,16 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterLink],
   templateUrl: './teams.component.html',
   styleUrl: './teams.component.css'
 })
-export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
-  @ViewChild("f") form!: NgForm;
+export class TeamsComponent implements OnDestroy, OnInit {
+  form!: FormGroup;
   subs: Subscription[] = [];
 
   teams: Team[] = [];
-  filter: string = "";
+  filteredTeams: Team[] = [];
 
   // teams?: Observable<Team[]>;
   //   {id: '1', name: 'Brigam Young University', abbr: 'BYU', offensiveRating: 10, defensiveRating: 20},
@@ -34,29 +35,30 @@ export class TeamsComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    const sub = this.store.select('teams').subscribe((state => {
-      this.teams = state.teams;
-    }));
-    if (sub) this.subs.push(sub);
-  }
+    this.form = new FormGroup({
+      'teamFilter': new FormControl('')
+    })
 
-  ngAfterViewInit(): void {
-    const sub = this.form.valueChanges?.subscribe(change => {
-      this.filter = this.form.value['filter'].toUpperCase();
-    });
-    if (sub) this.subs.push(sub);
+    this.subs.push(this.store.select('teams').subscribe((state => {
+      this.teams = state.teams;
+      this.filterTeams(this.form.value.teamFilter);
+    })));
+
+    this.subs.push(this.form.controls['teamFilter'].valueChanges.pipe(debounceTime(300),distinctUntilChanged())
+    .subscribe(value => {
+      this.filterTeams(value);
+    }));
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(sub => sub.unsubscribe());
   }
 
-  filterTeams(teams: Team[]): Team[] {
-    return teams.filter(team => team.name.toUpperCase().startsWith(this.filter) || 
-      team.abbr.toUpperCase().startsWith(this.filter));
+  filterTeams(filter: string) {
+    this.filteredTeams = this.teams.filter(team => teamNameMatches(team, filter));
   }
 
   clearForm() {
-    this.form.setValue({'filter': ''});
+    this.form.setValue({'teamFilter': ''});
   }
 }

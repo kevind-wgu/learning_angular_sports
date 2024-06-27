@@ -1,0 +1,14 @@
+<form [formGroup]="form">
+  <div class="row">
+    <div class="col col-sm-auto">{{getTeam(schedule.teamAId)?.abbr}}</div>
+    <div class="col col-sm-1"><input type="number" class="form-control" formControlName="teamAScore"></div>
+    <div class="col col-sm-auto">{{getTeam(schedule.teamBId)?.abbr}}</div>
+    <div class="col col-sm-1"><input type="number" class="form-control" formControlName="teamBScore"></div>
+    <div class="col col-sm-3">{{schedule.date | date}}</div>
+    <div class="col col-auto">
+      <button type="button" class="btn btn-sm btn-outline-primary" (click)="submitScore()">
+        <span class="bi bi-save"></span>
+      </button>
+    </div>
+  </div>
+</form>
