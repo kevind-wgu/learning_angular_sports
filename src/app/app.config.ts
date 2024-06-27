@@ -10,6 +10,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { SportGuardClass } from './sports/sports.guard';
 import { TeamEffects } from './store/teams.store';
 import { SeasonEffects } from './store/season.store';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +21,6 @@ export const appConfig: ApplicationConfig = {
       StoreModule.forRoot(appReducer, {}),
       EffectsModule.forRoot(SportsEffects, TeamEffects, SeasonEffects),
     ),
+    provideAnimations()
   ]
 };

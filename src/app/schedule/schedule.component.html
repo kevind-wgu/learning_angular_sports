@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col col-sm-1">
         <label for="teamA" class="form-label">Home</label>
-        <input class="form-control" formControlName="teamA" list="teamAOptions" id="teamAOptionsList"  #teamAFocus>
+        <input class="form-control" autocomplete="off" formControlName="teamA" list="teamAOptions" id="teamAOptionsList"  #teamAFocus>
         <datalist id="teamAOptions">
           <ng-container *ngFor="let team of teams">
             <option value="{{team.abbr}}">
@@ -13,7 +13,7 @@
       <div class="col col-sm-1">vs</div>
       <div class="col col-sm-1">
         <label for="teamB" class="form-label">Away</label>
-        <input class="form-control" formControlName="teamB" list="teamBOptions" id="teamAOptionsList">
+        <input class="form-control" autocomplete="off" formControlName="teamB" list="teamBOptions" id="teamAOptionsList">
         <datalist id="teamBOptions">
           <ng-container *ngFor="let team of teams">
             <option value="{{team.abbr}}">
@@ -36,7 +36,7 @@
       </div>
     </div>
   </form>
-  <div class="row mt-2" *ngFor="let item of schedules">
+  <div class="row mt-2" *ngFor="let item of schedules" [@.disabled]="animationDisabled" [@myTrigger]='state' >
     <div class="col col-sm-1">{{getTeam(item.teamAId)?.abbr}}</div>
     <div class="col col-sm-1">vs</div>
     <div class="col col-sm-1">{{getTeam(item.teamBId)?.abbr}}</div>

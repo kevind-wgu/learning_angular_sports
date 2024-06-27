@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Schedule, Season, Sport, Team } from '../models';
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/app.store';
@@ -8,6 +8,7 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validator
 import { CommonModule } from '@angular/common';
 import { NgbDatepickerModule, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 function createTeamExistsValidator(teamSupplier: TeamSupplier) : ValidatorFn {
   return (control => {
@@ -37,7 +38,29 @@ interface TeamSupplier {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbDatepickerModule, SeasonSelectorComponent],
   templateUrl: './schedule.component.html',
-  styleUrl: './schedule.component.css'
+  styleUrl: './schedule.component.css',
+  animations: [
+    trigger('myTrigger', [
+      state(
+        'fadeInFlash',
+        style({ backgroundColor: 'white', })
+      ),
+      transition('void => *', [
+        style({ backgroundColor: '#e5fbe5', transform: 'translateX(-100px)', }),
+        animate(
+          '500ms',
+          style({ backgroundColor: '#e5fbe5', transform: 'translateX(0px)', })
+        ),
+      ]),
+      transition('* => void', [
+        style({ backgroundColor: 'white'}),
+        animate(
+          '500ms',
+          style({ backgroundColor: '#ffcccb', opacity: 0.2, transform: 'translateX(100px)', })
+        ),
+      ]),
+    ]),
+  ],
 })
 export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   season?: Season;
@@ -47,6 +70,8 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
   schedules: Schedule[] = [];
   subs: Subscription[] = [];
   form!: FormGroup;
+  state: string = 'fadeInFlash';
+  animationDisabled = true;
 
   @ViewChild("teamAFocus") teamAFocus!: ElementRef;
 
@@ -80,6 +105,8 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
     this.subs.push(this.store.select('teams').subscribe(teamState => {
       this.teams = teamState.teams;
     }));
+
+    this.disableAnimations();
   }
 
   ngOnDestroy(): void {
@@ -90,11 +117,16 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
     return this.teams;
   }
 
+  private disableAnimations() {
+    this.animationDisabled = true;
+    setTimeout(() => this.animationDisabled = false, 1000);
+  }
+
   private loadSchedules() {
-    console.log("Load Schedules");
+    this.disableAnimations();
     if (this.season && this.sport) {
       this.datastore.getSchedules(this.sport, this.season).subscribe(schedules => {
-        console.log("Set Schedules");
+        this.disableAnimations();
         this.schedules = schedules;
       });
     }
