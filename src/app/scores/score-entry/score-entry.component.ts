@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SeasonSelectorComponent } from '../../season/season-selector/season-selector.component';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import { Subscription, debounceTime, distinctUntilChanged, of } from 'rxjs';
+import { Subscription, debounceTime, of } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { Schedule, Season, Sport, Team, teamNameMatches, Score, keyById } from '../../models';
+import { Schedule, Season, Sport, Team, teamNameMatches, Score } from '../../models';
 import { AppState } from '../../store/app.store';
 import { DatastoreService } from '../../datastore.service';
 import { NgbDate, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { ScoreEntryItemEditComponent } from '../score-entry-item-edit/score-entry-item-edit.component';
 import { ScoreEntryItemDisplayComponent } from '../score-entry-item-display/score-entry-item-display.component';
+import { CacheDataService } from '../../store/cache-data-service';
 
 @Component({
   selector: 'app-score-entry',
@@ -20,18 +21,17 @@ import { ScoreEntryItemDisplayComponent } from '../score-entry-item-display/scor
   templateUrl: './score-entry.component.html',
   styleUrl: './score-entry.component.css'
 })
-export class ScoreEntryComponent {
-  private sport?: Sport;
+export class ScoreEntryComponent implements OnInit, OnDestroy {
+  private sport: Sport | null = null;
   private schedules: Schedule[] = [];
-  private season?: Season;
+  private season: Season | null = null;
   teams: Team[] = [];
   teamsHash: {[key:string]: Team} = {};
   subs: Subscription[] = [];
   form!: FormGroup;
   filteredSchedules: Schedule[] = [];
 
-  constructor(private store: Store<AppState>, private datastore: DatastoreService) {
-  }
+  constructor(private store: Store<AppState>, private datastore: DatastoreService, private cacheData: CacheDataService) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -39,40 +39,39 @@ export class ScoreEntryComponent {
       'endDate': new FormControl(this.getNow(+7)),
       'teamFilter': new FormControl('') });
 
-    this.subs.push(this.form.controls['beginDate'].valueChanges.pipe(debounceTime(500),distinctUntilChanged())
+    this.subs.push(this.form.controls['beginDate'].valueChanges.pipe(debounceTime(500))
     .subscribe(() => {
       this.loadSchedules();
     }));
 
-    this.subs.push(this.form.controls['endDate'].valueChanges.pipe(debounceTime(500),distinctUntilChanged())
+    this.subs.push(this.form.controls['endDate'].valueChanges.pipe(debounceTime(500))
     .subscribe(() => {
       this.loadSchedules();
     }));
 
-    this.subs.push(this.form.controls['teamFilter'].valueChanges.pipe(debounceTime(500),distinctUntilChanged())
+    this.subs.push(this.form.controls['teamFilter'].valueChanges.pipe(debounceTime(500))
     .subscribe(value => {
       this.filterSchedules(value);
     }));
 
-    this.subs.push(this.store.select('seasons').subscribe(seasonState => {
-      if (seasonState.currentSeason) {
-        this.season = seasonState.currentSeason;
-        this.loadSchedules();
-      }
-      return of();
+    this.refreshCacheData();
+    this.subs.push(this.cacheData.refreshEvent.pipe(debounceTime(100)).subscribe(e => {
+      this.refreshCacheData();
     }));
+  }
 
-    this.subs.push(this.store.select('sports').subscribe(sportsState => {
-      if (sportsState.currentSport) {
-        this.sport = sportsState.currentSport;
-        this.loadSchedules();
-      }
-    }));
+  ngOnDestroy(): void {
+    this.subs.forEach(sub => sub.unsubscribe());
+  }
 
-    this.subs.push(this.store.select('teams').subscribe(teamState => {
-      this.teams = teamState.teams;
-      this.teamsHash = keyById(teamState.teams);
-    }));
+  private refreshCacheData() {
+    console.log("Score Entry: Refresh Cache Data");
+    this.sport = this.cacheData.getCurrentSport();
+    this.season = this.cacheData.getCurrentSeason();
+    this.teams = this.cacheData.getTeams();
+    this.teamsHash = this.cacheData.getTeamsHash();
+
+    this.loadSchedules();
   }
 
   getTeam(teamId: string) : Team | null {

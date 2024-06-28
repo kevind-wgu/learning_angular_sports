@@ -1,15 +1,16 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Subscription, of } from 'rxjs';
+import { Subscription, debounceTime, of } from 'rxjs';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbDatepickerModule, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
-import { Schedule, Season, Sport, Team, keyById} from '../models';
+import { Schedule, Season, Sport, Team } from '../models';
 import { AppState } from '../store/app.store';
 import { DatastoreService } from '../datastore.service';
 import { SeasonSelectorComponent } from '../season/season-selector/season-selector.component';
+import { CacheDataService } from '../store/cache-data-service';
 
 function createTeamExistsValidator(teamSupplier: TeamSupplier) : ValidatorFn {
   return (control => {
@@ -64,8 +65,8 @@ interface TeamSupplier {
   ],
 })
 export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
-  season?: Season;
-  sport?: Sport;
+  season: Season | null = null;
+  sport: Sport | null = null;
   teams: Team[]= [];
   teamsHash: {[key:string]: Team} = {};
   schedules: Schedule[] = [];
@@ -76,7 +77,7 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
 
   @ViewChild("teamAFocus") teamAFocus!: ElementRef;
 
-  constructor(private store: Store<AppState>, private datastore: DatastoreService) {
+  constructor(private store: Store<AppState>, private datastore: DatastoreService, private cacheData: CacheDataService) {
   }
 
   ngOnInit(): void {
@@ -87,31 +88,28 @@ export class ScheduleComponent implements OnInit, OnDestroy, TeamSupplier {
       ),
       'date': new FormControl('', [Validators.required]),
     });
-    this.subs.push(this.store.select('seasons').subscribe(seasonState => {
-      if (seasonState.currentSeason) {
-        this.season = seasonState.currentSeason;
-        this.loadSchedules();
-      }
-      return of();
-    }));
 
-    this.subs.push(this.store.select('sports').subscribe(sportsState => {
-      if (sportsState.currentSport) {
-        this.sport = sportsState.currentSport;
-        this.loadSchedules();
-      }
-    }));
-
-    this.subs.push(this.store.select('teams').subscribe(teamState => {
-      this.teams = teamState.teams;
-      this.teamsHash = keyById(teamState.teams);
-    }));
+    this.refreshCacheData();
+    this.cacheData.refreshEvent.pipe(debounceTime(100)).subscribe(e => {
+      this.refreshCacheData();
+    });
 
     this.disableAnimations();
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
+  }
+
+  private refreshCacheData() {
+    console.log("Schedule: Refresh Cache Data");
+    this.sport = this.cacheData.getCurrentSport();
+    this.season = this.cacheData.getCurrentSeason();
+    this.teams = this.cacheData.getTeams();
+    this.teamsHash = this.cacheData.getTeamsHash();
+    console.log("Schedule: Refresh Cache Data2",this.season, this.sport, this.teams, this.teamsHash);
+
+    this.loadSchedules();
   }
 
   getTeams(): Team[] {

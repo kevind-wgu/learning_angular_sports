@@ -85,6 +85,7 @@ export class DatastoreService {
       params['orderBy'] = '"date"';
     }
     const query = URL + `/schedules/${sport.id}/${season.year}.json`
+    // console.log("getSchedules", query, params);
     return this.http.get<{[key: string]: Schedule}>(query, {params: params}).pipe(
       map(schedObj => {
         if (!schedObj) {
