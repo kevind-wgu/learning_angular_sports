@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { environment } from "../environments/environment";
 import { HttpClient } from '@angular/common/http';
 import { Schedule, Score, Season, Sport, Team } from './models';
-import { Observable, Subscription, map, tap } from 'rxjs';
+import { Observable, Subscription, catchError, map, tap, throwError } from 'rxjs';
+import { ErrortrackerService } from './errors/errortracker.service';
 
 const URL = environment.firebaseUrl;
 
@@ -10,7 +11,7 @@ const URL = environment.firebaseUrl;
   providedIn: 'root'
 })
 export class DatastoreService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private errortracker: ErrortrackerService) { }
 
   getSports() :Observable<Sport[]> {
     return this.http.get<{[key: string]: Sport}>(URL + '/sports.json').pipe(
@@ -21,12 +22,21 @@ export class DatastoreService {
         return Object.keys(sportObj).map(key => {
           return {...sportObj[key]};
         });
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Getting Sports", e, {caught:caught});
+        return throwError(() => caught);
+      }),
     );
   }
 
   updateSport(sport: Sport) : Subscription {
-    return this.http.put(URL + `/sports/${sport.id}.json`, sport).subscribe(res => {
+    return this.http.put(URL + `/sports/${sport.id}.json`, sport).pipe(
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Saving Sport", e, {sport: sport, caught:caught});
+        return throwError(() => caught);
+      }),
+    ).subscribe(res => {
       console.log("Team Updated", sport.id);
     });
   }
@@ -40,12 +50,21 @@ export class DatastoreService {
         return Object.keys(teamObj).map(key => {
           return {...teamObj[key]} as Team;
         })
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Loading Teams", e, {sport: sport, caught:caught});
+        return throwError(() => caught);
+      }),
     )
   }
 
   updateTeam(sport: Sport, team: Team) : Subscription {
-    return this.http.put(URL + `/teams/${sport.id}/${team.id}.json`, team).subscribe(res => {
+    return this.http.put(URL + `/teams/${sport.id}/${team.id}.json`, team).pipe(
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Updating Team", e, {sport: sport, team: team, caught:caught});
+        return throwError(() => caught);
+      }),
+    ).subscribe(res => {
       console.log("Team Updated", team.id);
     });
   }
@@ -59,12 +78,21 @@ export class DatastoreService {
         return Object.keys(seasonObj).map(key => {
           return {year: +key} as Season;
         })
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Getting Seasons", e, {sport: sport, caught:caught});
+        return throwError(() => caught);
+      }),
     );
   }
 
   addSeason(sport: Sport, season: Season) : Subscription {
-    return this.http.put(URL + `/sports/${sport.id}/seasons/${season.year}.json`, true).subscribe(res => {
+    return this.http.put(URL + `/sports/${sport.id}/seasons/${season.year}.json`, true).pipe(
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Adding Season", e, {sport: sport, season: season, caught:caught});
+        return throwError(() => caught);
+      }),
+    ).subscribe(res => {
       console.log("Season Added", season);
     });
   }
@@ -96,7 +124,11 @@ export class DatastoreService {
           return {...obj, date: new Date(obj.date)};
         })
         .sort((s1, s2) => s1.date.getDate() - s2.date.getDate());
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Getting Schedules", e, {sport: sport, season: season, params: params, caught:caught});
+        return throwError(() => caught);
+      }),
     );
   }
 
@@ -104,7 +136,11 @@ export class DatastoreService {
     return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`, sched).pipe(
       tap(res => {
         console.log("Schedule Added", sched);
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Adding Schedule", e, {sport: sport, season: season, sched: sched, caught:caught});
+        return throwError(() => caught);
+      }),
     )
   }
 
@@ -113,7 +149,11 @@ export class DatastoreService {
     return this.http.delete(URL + `/schedules/${sport.id}/${season.year}/${sched.id}.json`).pipe(
       tap(res => {
         console.log("Schedule Deleted", sched);
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Deleting Schedule", e, {sport: sport, season: season, sched: sched, caught:caught});
+        return throwError(() => caught);
+      }),
     )
   }
 
@@ -121,7 +161,11 @@ export class DatastoreService {
     return this.http.put(URL + `/schedules/${sport.id}/${season.year}/${sched.id}/score.json`, score).pipe(
       tap(res => {
         console.log("Score Saved", sched);
-      })
+      }),
+      catchError((e, caught) => {
+        this.errortracker.addError("Error Saving Score", e, {sport: sport, season: season, sched: sched, score: score, caught:caught});
+        return throwError(() => caught);
+      }),
     )
   }
 }

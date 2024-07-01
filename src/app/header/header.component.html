@@ -20,3 +20,30 @@
     </span>
   </div>
 </nav>
+<div style="position: absolute; float:right; right:0px; bottom: 0px;">
+  <!-- <div class="alert alert-success d-flex align-items-center" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+    <div>
+      An example success alert with an icon
+    </div>
+  </div>
+  <div class="alert alert-warning d-flex align-items-center" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+    <div>
+      An example warning alert with an icon
+    </div>
+  </div>
+  <div class="alert alert-danger d-flex align-items-center" role="alert">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+    <div>
+      An example danger alert with an icon
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div> -->
+  <div class="alert alert-danger d-flex align-items-center" role="alert" *ngFor="let error of errors" [@errorAnimation]='"fadeInFlash"'>
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+    <div>
+      {{error}}
+    </div>
+  </div>
+</div> 
