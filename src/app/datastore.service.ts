@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from "../environments/environment";
 import { Schedule, Score, Season, Sport, Team } from './models';
 import { Observable, Subscription, catchError, map, tap, throwError } from 'rxjs';
+
+import { environment } from "../environments/environment";
 import { ErrortrackerService } from './errors/errortracker.service';
 
 const URL = environment.firebaseUrl;

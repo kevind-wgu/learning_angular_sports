@@ -49,6 +49,10 @@ export class AuthData {
     return this.email;
   }
 
+  getToken() : string {
+    return this.token;
+  }
+
   isValid() : boolean {
     return !!this.token && !!this.expireDate && this.expireDate.getTime() > new Date().getTime();
   }
