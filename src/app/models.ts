@@ -37,6 +37,48 @@ export interface Schedule {
   score?: Score;
 }
 
+export class AuthData {
+  constructor(
+    private email: string, 
+    private token: string, 
+    private expireDate: Date,
+    private refreshToken: string,
+  ) {}
+
+  getEmail() : string {
+    return this.email;
+  }
+
+  isValid() : boolean {
+    return !!this.token && !!this.expireDate && this.expireDate.getTime() > new Date().getTime();
+  }
+
+  getRefreshToken() : string {
+    return this.refreshToken;
+  }
+
+  toStorageString() : string {
+    return JSON.stringify({
+      email: this.email,
+      token: this.token,
+      expireTime: this.expireDate.getTime(),
+      refreshToken: this.refreshToken
+    });
+  }
+
+}
+
+export function authFromStorageString(dataStr: string) : AuthData | null {
+  if (dataStr) {
+    const data = JSON.parse(dataStr);
+    if (data.email && data.token && data.expireTime && data.refreshToken) {
+      const expire = new Date(data.expireTime);
+      return new AuthData(data.email, data.token, expire, data.refreshToken);
+    }
+  }
+  return null;
+}
+
 export function getImageForSport(type: SportType) : string {
   if (type == SportType.basketball) {
     return '/assets/images/basketball.jpeg';

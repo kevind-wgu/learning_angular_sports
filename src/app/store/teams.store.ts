@@ -39,7 +39,7 @@ export const teamReducer = createReducer(
   on(setTeams, (state, action) => {
     var teams = [...action.teams].sort((t1, t2) => t1.abbr.localeCompare(t2.abbr));
     const newState = {...state, teams: teams};
-    console.log("Set Teams", newState);
+    // console.log("Set Teams", newState);
     return newState;
   }),
   on(addTeam, (state, action) => {
@@ -68,7 +68,7 @@ export class TeamEffects {
       ofType(SportsStore.setCurrentSport),
       withLatestFrom(this.store.select('sports')),
       switchMap(([action, sportStore]) => {
-        console.log("Load Team Effect", sportStore);
+        // console.log("Load Team Effect", sportStore);
         if (sportStore.currentSport) {
           return this.datastore.loadTeams(sportStore.currentSport);
         }

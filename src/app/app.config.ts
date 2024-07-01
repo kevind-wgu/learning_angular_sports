@@ -11,15 +11,18 @@ import { SportGuardClass } from './sports/sports.guard';
 import { TeamEffects } from './store/teams.store';
 import { SeasonEffects } from './store/season.store';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { AuthGuardClass } from './auth/auth.guard';
+import { AuthEffects } from './store/auth.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(),
     SportGuardClass,
+    AuthGuardClass,
     importProvidersFrom(
       StoreModule.forRoot(appReducer, {}),
-      EffectsModule.forRoot(SportsEffects, TeamEffects, SeasonEffects),
+      EffectsModule.forRoot(SportsEffects, TeamEffects, SeasonEffects, AuthEffects),
     ),
     provideAnimations()
   ]

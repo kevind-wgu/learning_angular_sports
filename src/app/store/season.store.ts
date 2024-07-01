@@ -34,12 +34,12 @@ export const seasonReducer = createReducer(
   on(setSeasons, (state, action) => {
     var seasons = [...action.seasons].sort((s1,s2) => s1.year - s2.year);
     const newState = {...state, seasons: seasons};
-    console.log("Set Seasons", newState);
+    // console.log("Set Seasons", newState);
     return newState;
   }),
   on(setCurrentSeason, (state, action) => {
     const newState = {...state, currentSeason: action.season};
-    console.log("Set Current Season", newState);
+    // console.log("Set Current Season", newState);
     return newState;
   }),
   on(addSeason, (state, action) => {

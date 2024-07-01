@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { AppState } from './store/app.store';
 import { Store } from '@ngrx/store';
-import * as SportStore from './store/sports.store';
+import * as AuthStore from './store/auth.store';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    console.log("INITIAL APP LOAD");
-    this.store.dispatch(SportStore.initialLoadSports());
+    // console.log("INITIAL APP LOAD");
+    this.store.dispatch(AuthStore.autoLogin());
   }
 }

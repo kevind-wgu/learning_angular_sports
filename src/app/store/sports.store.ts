@@ -1,9 +1,12 @@
-import { createAction, createReducer, on, props } from "@ngrx/store";
+import { Store, createAction, createReducer, on, props } from "@ngrx/store";
 import { Sport } from "../models";
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { map, of, switchMap, tap } from "rxjs";
+import { map, of, switchMap, tap, withLatestFrom } from "rxjs";
 import { DatastoreService } from "../datastore.service";
+import * as AuthStore from "./auth.store";
+import { AppState } from "./app.store";
+import { Router } from "@angular/router";
 
 export interface State {
   sports: Sport[],
@@ -15,7 +18,6 @@ const INITIAL_STATE : State = {
   currentSport: null,
 };
 
-export const initialLoadSports = createAction('[Sports] Initial Load');
 export const setSports = createAction('[Sports] Set Sports', 
   props<{sports: Sport[], loadedFromLocal: boolean}>()
 );
@@ -49,19 +51,15 @@ export class SportsEffects {
   constructor(
     private actions$: Actions, 
     private datastore: DatastoreService,
+    private store: Store<AppState>,
+    private router: Router,
   ) {}
 
-  initialLoadSports = createEffect(
+  loadSportsOnLogin = createEffect(
     () => this.actions$.pipe(
-      ofType(initialLoadSports),
+      ofType(AuthStore.login),
       switchMap(() => {
-        const sportsJsonStr = localStorage.getItem('sports');
-        if (sportsJsonStr) {
-          console.log("Load Sports Effect: Local");
-          const sports: Sport[] = JSON.parse(sportsJsonStr);
-          return of({sports: sports, loadedFromLocal: true});
-        }
-        console.log("Load Sports Effect: Firebase");
+        // console.log("Load Sports Effect: Firebase");
         return this.datastore.getSports().pipe(
           map(sports => {
             return {sports: sports, loadedFromLocal: false}
@@ -76,15 +74,19 @@ export class SportsEffects {
 
   initialLoadCurrentSport = createEffect(
     () => this.actions$.pipe(
-      ofType(initialLoadSports),
-      switchMap(() => {
-        const currentSportJson = localStorage.getItem('currentSport');
-        var sport = null;
-        if (currentSportJson) {
-          sport = JSON.parse(currentSportJson);
-          console.log("Load Current Sport Effect: Local", sport);
+      ofType(setSports),
+      withLatestFrom(this.store.select('sports')),
+      switchMap(([action, state]) => {
+        if (!state.currentSport) {
+          const currentSportJson = localStorage.getItem('currentSport');
+          var sport = null;
+          if (currentSportJson) {
+            sport = JSON.parse(currentSportJson);
+            // console.log("Load Current Sport Effect: Local", sport);
+          }
+          return of(sport);
         }
-        return of(sport);
+        return of();
       }),
       map((sport) => {
         return setCurrentSport({sport: sport});
@@ -97,7 +99,7 @@ export class SportsEffects {
       ofType(setSports),
       tap((action) => {
         if (!action.loadedFromLocal) {
-          console.log("store Sports Effect", action.sports);
+          // console.log("store Sports Effect", action.sports);
           localStorage.setItem('sports', JSON.stringify(action.sports));
         }
       })
@@ -109,8 +111,18 @@ export class SportsEffects {
     () => this.actions$.pipe(
       ofType(setCurrentSport),
       tap((action) => {
-        console.log("store Current Sports Effect", action.sport);
+        // console.log("store Current Sports Effect", action.sport);
         localStorage.setItem('currentSport', JSON.stringify(action.sport));
+      })
+    ),
+    {dispatch: false}
+  )
+  
+  redirectAfterSetCurrentSport = createEffect(
+    () => this.actions$.pipe(
+      ofType(setCurrentSport),
+      tap((action) => {
+        this.router.navigate(['/scores']);
       })
     ),
     {dispatch: false}

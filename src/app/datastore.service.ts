@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { environment } from "../environments/environment";
 import { HttpClient } from '@angular/common/http';
+import { environment } from "../environments/environment";
 import { Schedule, Score, Season, Sport, Team } from './models';
 import { Observable, Subscription, catchError, map, tap, throwError } from 'rxjs';
 import { ErrortrackerService } from './errors/errortracker.service';

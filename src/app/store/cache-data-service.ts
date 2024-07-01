@@ -19,21 +19,21 @@ export class CacheDataService implements OnDestroy {
 
   constructor(private store: Store<AppState>) { 
     this.subs.push(this.store.select('sports').subscribe(sportsState => {
-      console.log("CacheData: Refresh Sports");
+      // console.log("CacheData: Refresh Sports");
       this.sports = sportsState.sports;
       this.sport = sportsState.currentSport;
       this.refreshEvent.next(true);
     }));
 
     this.subs.push(this.store.select('seasons').subscribe(seasonState => {
-      console.log("CacheData: Refresh Seasons");
+      // console.log("CacheData: Refresh Seasons");
       this.seasons = seasonState.seasons;
       this.season = seasonState.currentSeason;
       this.refreshEvent.next(true);
     }));
 
     this.subs.push(this.store.select('teams').subscribe(sportsState => {
-      console.log("CacheData: Refresh Teams");
+      // console.log("CacheData: Refresh Teams");
       this.teams = sportsState.teams;
       this.refreshEvent.next(true);
     }));

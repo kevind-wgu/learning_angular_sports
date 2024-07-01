@@ -65,7 +65,7 @@ export class ScoreEntryComponent implements OnInit, OnDestroy {
   }
 
   private refreshCacheData() {
-    console.log("Score Entry: Refresh Cache Data");
+    // console.log("Score Entry: Refresh Cache Data");
     this.sport = this.cacheData.getCurrentSport();
     this.season = this.cacheData.getCurrentSeason();
     this.teams = this.cacheData.getTeams();
